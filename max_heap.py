@@ -4,6 +4,7 @@ class MaxHeap:
         self.positions = []
         for idx, _ in enumerate(self.source):
             self.positions.append(idx)
+        print(self.positions)
         self.quick_sort()
         for pos in self.positions:
             print(self.get_value_by_pos(pos))
@@ -20,10 +21,10 @@ class MaxHeap:
         self.positions[b] = temp;    
     
     def quick_sort(self):
-        for i in self.positions:
-            for j in self.positions:
-                if self.is_smaller_then(i, j):
-                    self.swap(i, j)
+        for i in range(len(self.positions) - 1):
+            for j in range(len(self.positions) - 1 - i):
+                if self.is_smaller_then(j, j + 1):
+                    self.swap(j, j + 1)
 
     def move(self):
         print("not implemented")

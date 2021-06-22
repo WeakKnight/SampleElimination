@@ -20,8 +20,8 @@ def display_vec_array(arr):
     plt.show()
 
 np.random.seed(0)
-X = np.random.random((1500, 2))  # 5 points in 2 dimensions
+X = np.random.random((10, 1))  # 5 points in 2 dimensions
 heap = MaxHeap(X)
-utils.display_vec_array(X)
+# utils.display_vec_array(X)
 
 # %%
