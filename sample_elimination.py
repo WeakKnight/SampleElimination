@@ -9,19 +9,56 @@
 import numpy as np
 import utils
 from max_heap import MaxHeap
-def display_vec_array(arr):
-    xArr = []
-    yArr = []
-    for item in arr:
-        xArr.append(item[0])
-        yArr.append(item[1])
-    plt.figure(figsize = (5,5))
-    plt.scatter(xArr, yArr)
-    plt.show()
+from scipy import spatial
+from sklearn.metrics.pairwise import pairwise_distances
+import math
 
 np.random.seed(0)
-X = np.random.random((10, 1))  # 5 points in 2 dimensions
-heap = MaxHeap(X)
-# utils.display_vec_array(X)
+
+alpha = 8
+
+inputNum = 250
+outputNum = 50
+initialSamples = np.random.random((inputNum, 2))  # 5 points in 2 dimensions
+
+utils.displayVecArray(initialSamples)
+
+tree = spatial.KDTree(initialSamples)
+weights = np.zeros(inputNum)
+
+domainArea = 1.0 * 1.0 / outputNum
+domainDimension = 2
+
+rMax = math.sqrt(domainArea / (2 * math.sqrt(3)))
+rMin = utils.getWeightLimitFraction(inputNum, outputNum)
+for i in range(inputNum):
+    neighbourIndices = tree.query_ball_point(initialSamples[i], r = 2.0 * rMax)
+    for neighbourIndex in neighbourIndices:
+        squaredDistance = pairwise_distances([initialSamples[i]], [initialSamples[neighbourIndex]]).flatten()[0]
+        weights[i] += utils.weightFunction(squaredDistance, 2.0 * rMax)
+
+heap = MaxHeap()
+heap.SetData(weights)
+heap.Build()
+
+outputSamples = []
+remainSampleNum = inputNum
+while remainSampleNum > outputNum:
+    index = int(heap.GetTopItemID())
+    heap.Pop()
+
+    neighbourIndices = tree.query_ball_point(initialSamples[index], r = 2.0 * rMax)
+    for neighbourIndex in neighbourIndices:
+        if neighbourIndex != index:
+            squaredDistance = pairwise_distances([initialSamples[index]], [initialSamples[neighbourIndex]]).flatten()[0]
+            weights[neighbourIndex] -= utils.weightFunction(squaredDistance, 2.0 * rMax)
+            heap.MoveItemDown(neighbourIndex)
+    remainSampleNum -= 1
+
+for i in range(outputNum):
+    outputSamples.append(initialSamples[int(heap.GetIDFromHeap(i))])
+
+utils.displayVecArray(outputSamples)
+
 
 # %%

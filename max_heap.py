@@ -1,36 +1,96 @@
+import numpy as np
+
+
 class MaxHeap:
-    def __init__(self, source):
-        self.source = source.copy()
-        self.positions = []
-        for idx, _ in enumerate(self.source):
-            self.positions.append(idx)
-        print(self.positions)
-        self.quick_sort()
-        for pos in self.positions:
-            print(self.get_value_by_pos(pos))
-        
-    def get_value_by_pos(self, pos):
-        return self.source[self.positions[pos]]
-    
-    def is_smaller_then(self, a, b):
-        return self.get_value_by_pos(a) < self.get_value_by_pos(b)
+    def __init__(self):
+        self.data = None
+        self.heap = None
+        self.heapPos = None
+        self.size = 0
+        self.heapItemCount = 0
+        return
 
-    def swap(self, a, b):
-        temp = self.positions[a]
-        self.positions[a] = self.positions[b]
-        self.positions[b] = temp;    
-    
-    def quick_sort(self):
-        for i in range(len(self.positions) - 1):
-            for j in range(len(self.positions) - 1 - i):
-                if self.is_smaller_then(j, j + 1):
-                    self.swap(j, j + 1)
+    def ClearHeap(self):
+        self.heap = None
+        self.heapPos = None
+        self.heapItemCount = 0
 
-    def move(self):
-        print("not implemented")
+    def SetData(self, items):
+        self.data = items
+        self.size = len(items)
 
-    def move_up(self):
-        print("not implemented")
-    
-    def move_down(self):
-        print("not implemented")
+    def Build(self):
+        self.ClearHeap()
+        self.heapItemCount = self.size
+        self.heap = np.zeros(self.size + 1)
+        self.heapPos = np.zeros(self.size)
+
+        for i in range(self.heapItemCount):
+            self.heapPos[i] = i + 1
+
+        for i in range(1, self.heapItemCount + 1):
+            self.heap[i] = i - 1
+
+        if self.heapItemCount <= 1:
+            return
+
+        start = int(self.heapItemCount / 2)
+
+        for ix in range(start, 0, -1):
+            self.HeapMoveDown(ix)
+
+    def IsSmaller(self, ix1, ix2):
+        ix1 = int(ix1)
+        ix2 = int(ix2)
+        result = self.data[int(self.heap[ix1])] < self.data[int(self.heap[ix2])]
+        return result
+
+    def SwapItems(self, ix1, ix2):
+
+        ix1 = int(ix1)
+        ix2 = int(ix2)
+
+        t = int(self.heap[ix1])
+        self.heap[ix1] = self.heap[ix2]
+        self.heap[ix2] = t
+
+        self.heapPos[int(self.heap[ix1])] = ix1
+        self.heapPos[int(self.heap[ix2])] = ix2
+
+    def HeapMoveDown(self, ix):
+        ix = int(ix)
+        org = int(ix)
+        child = int(ix * 2)
+
+        while child + 1 <= self.heapItemCount:
+            if self.IsSmaller(child, child + 1):
+                child += 1
+            if not self.IsSmaller(ix, child):
+                return ix != org
+
+            self.SwapItems(ix, child)
+            ix = child
+            child = ix * 2
+
+        if child <= self.heapItemCount:
+            if self.IsSmaller(ix, child):
+                self.SwapItems(ix, child)
+                return True
+
+        return ix != org
+
+    def MoveItemDown(self, id):
+        id = int(id)
+        return self.HeapMoveDown(self.heapPos[id])
+
+    def GetTopItemID(self):
+        return self.heap[1]
+
+    def Pop(self):
+        self.SwapItems(1, self.heapItemCount)
+        self.heapItemCount -= 1
+        self.HeapMoveDown(1)
+
+    def GetIDFromHeap(self, heapIndex):
+        heapIndex = int(heapIndex)
+        return self.heap[heapIndex + 1]
