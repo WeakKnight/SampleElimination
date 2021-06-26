@@ -62,3 +62,36 @@ utils.displayVecArray(outputSamples)
 
 
 # %%
+import numpy as np
+import utils
+from scipy import spatial
+from sklearn.metrics.pairwise import pairwise_distances
+import math
+
+np.random.seed(0)
+NearestNeighborCount = 5
+IterationNum = 20
+outputNum = 50
+initialSamples = np.random.random((outputNum, 2))  # 5 points in 2 dimensions
+utils.displayVecArray(initialSamples)
+outputSamples = np.copy(initialSamples)
+for iterationIndex in range(IterationNum):
+    tree = spatial.KDTree(outputSamples)
+    for i in range(len(outputSamples)):
+        sample = outputSamples[i]
+        _, ii = tree.query(sample, NearestNeighborCount + 1)
+        squaredRMax = 0
+        for neighbourIndex in ii:
+            squaredDistance = pairwise_distances([sample], [outputSamples[int(neighbourIndex)]]).flatten()[0]
+            if squaredDistance > squaredRMax:
+                squaredRMax = squaredDistance
+        deltaX = np.array([0.0, 0.0])
+        for neighbourIndex in ii:
+            squaredDistance = pairwise_distances([sample], [outputSamples[neighbourIndex]]).flatten()[0]
+            if squaredDistance < squaredRMax:
+                movement = (1.0 / float(NearestNeighborCount)) * (sample - outputSamples[neighbourIndex]) * (math.sqrt(squaredRMax) / (math.sqrt(squaredDistance) + 1e-6) - 1.0)
+                deltaX += movement
+        sample += deltaX
+        outputSamples[i] = sample
+utils.displayVecArray(outputSamples)
+# %%
