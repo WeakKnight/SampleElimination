@@ -107,10 +107,10 @@ np.random.seed(0)
 alpha = 8
 
 inputNum = 250
-outputNum = 70
-nearestNeighborCount = 8
-initialSamples = np.random.random((inputNum, 2))  # 5 points in 2 dimensions
-
+outputNum = 50
+nearestNeighborCount = 12
+# initialSamples = np.random.random((inputNum * 0.5, 2))  # 5 points in 2 dimensions
+initialSamples = np.concatenate((np.random.random((int(inputNum / 2), 2)), 0.5 * np.random.random((int(inputNum / 2), 2))), axis=0)
 utils.displayVecArray(initialSamples)
 
 tree = spatial.KDTree(initialSamples)
