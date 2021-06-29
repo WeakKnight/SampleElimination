@@ -108,6 +108,7 @@ utils.displayVecArray(initialSamples)
 
 tree = spatial.KDTree(initialSamples)
 
+# Auto Parameter Tuning
 for di in range(100):
     for dj in range(20):
         NearestNeighborCount = 5 + int(di)
