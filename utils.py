@@ -15,6 +15,14 @@ def displayVecArray(arr):
     for item in arr:
         xArr.append(item[0])
         yArr.append(item[1])
-    plt.figure(figsize = (5,5))
-    plt.scatter(xArr, yArr)
+    fig = plt.figure(figsize = (5,5))
+    fig.patch.set_facecolor('#1e1e1e')
+    ax = fig.subplots()
+    ax.xaxis.label.set_color('#cccccc')
+    ax.tick_params(axis='x', colors='#cccccc')
+    ax.yaxis.label.set_color('#cccccc')
+    ax.tick_params(axis='y', colors='#cccccc')
+    
+    ax.scatter(xArr, yArr)
+    
     plt.show()
